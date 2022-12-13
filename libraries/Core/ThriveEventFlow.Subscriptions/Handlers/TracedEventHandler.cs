@@ -1,0 +1,54 @@
+
+using System.Diagnostics;
+using ThriveEventFlow.Diagnostics;
+using ThriveEventFlow.Diagnostics.Tracing;
+using ThriveEventFlow.Subscriptions.Context;
+using ThriveEventFlow.Subscriptions.Diagnostics;
+
+namespace ThriveEventFlow.Subscriptions;
+
+public class TracedEventHandler : IEventHandler {
+    public TracedEventHandler(IEventHandler eventHandler) {
+        _innerHandler = eventHandler;
+
+        _defaultTags = new[] {
+            new KeyValuePair<string, object?>(
+                TelemetryTags.ThriveEventFlow.EventHandler,
+                eventHandler.GetType().Name
+            )
+        };
+
+        DiagnosticName = _innerHandler.DiagnosticName;
+    }
+
+    readonly IEventHandler                   _innerHandler;
+    readonly KeyValuePair<string, object?>[] _defaultTags;
+
+    public string DiagnosticName { get; }
+
+    public async ValueTask<EventHandlingStatus> HandleEvent(IMessageConsumeContext context) {
+        using var activity = SubscriptionActivity
+            .Create(
+                $"{Constants.Components.EventHandler}.{DiagnosticName}/{context.MessageType}",
+                ActivityKind.Internal,
+                tags: _defaultTags
+            )
+            ?.SetContextTags(context)
+            ?.Start();
+
+        try {
+            var status = await _innerHandler.HandleEvent(context).NoContext();
+
+            if (activity != null && status == EventHandlingStatus.Ignored)
+                activity.ActivityTraceFlags = ActivityTraceFlags.None;
+
+            activity?.SetActivityStatus(ActivityStatus.Ok());
+
+            return status;
+        }
+        catch (Exception e) {
+            activity?.SetActivityStatus(ActivityStatus.Error(e, $"Error handling {context.MessageType}"));
+            throw;
+        }
+    }
+}
