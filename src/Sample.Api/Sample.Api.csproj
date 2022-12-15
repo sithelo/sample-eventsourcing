@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\libraries\Diagnostics\ThriveEventFlow.Diagnostics.OpenTelemetry\ThriveEventFlow.Diagnostics.OpenTelemetry.csproj" />
       <ProjectReference Include="..\..\libraries\Extensions\ThriveEventFlow.AspNetCore.Web\ThriveEventFlow.AspNetCore.Web.csproj" />
       <ProjectReference Include="..\..\libraries\SqlServer\ThriveEventFlow.SqlServer\ThriveEventFlow.SqlServer.csproj" />
       <ProjectReference Include="..\Sample.Domain\Sample.Domain.csproj" />
@@ -15,15 +16,18 @@
 
     <ItemGroup>
       <PackageReference Include="MongoDb.Bson.NodaTime" Version="3.0.0" />
+      <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
       <PackageReference Include="MongoDB.Driver.Core.Extensions.OpenTelemetry" Version="1.0.0" />
       <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0" />
       <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.3.1" />
       <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.4.0-alpha.2" />
       <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.3.1" />
+      <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.4.0-rc.1" />
       <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.10" />
-      <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+      <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.0.0-rc9.10" />
+      <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
       <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-      <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
+      <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 

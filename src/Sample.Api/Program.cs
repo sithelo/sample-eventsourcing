@@ -31,20 +31,25 @@ builder.Services
     .AddJsonOptions(cfg => cfg.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddOpenTelemetry();
+//builder.Services.AddThriveOpenTelemetry();
 builder.Services.AddThrive(builder.Configuration);
 
 var app = builder.Build();
 
 if (app.Configuration.GetValue<bool>("SqlServer:InitializeDatabase")) {
-    //await InitialiseSchema(app);
+    await InitialiseSchema(app);
 }
 
 app.UseSerilogRequestLogging();
 app.AddThriveEventFlowLogs();
-app.UseSwagger().UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.RoutePrefix = string.Empty;
+});
 app.MapControllers();
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
+//app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 var factory  = app.Services.GetRequiredService<ILoggerFactory>();
 var listener = new LoggingEventListener(factory, "OpenTelemetry");
